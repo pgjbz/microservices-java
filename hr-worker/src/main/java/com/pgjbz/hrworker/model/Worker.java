@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.SQLInsert;
 
 import javax.persistence.*;
 
@@ -14,7 +13,6 @@ import javax.persistence.*;
 @ToString
 @AllArgsConstructor
 @Table(name = "TB_WORKER")
-@SQLInsert(sql = "import.sql")
 @NoArgsConstructor(onConstructor = @__(@Deprecated))
 public class Worker {
 
