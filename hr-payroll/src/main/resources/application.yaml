@@ -1,0 +1,18 @@
+server:
+  port: 8002
+
+springdoc:
+  api-docs:
+    path: /api-documentation
+  swagger-ui:
+    path: /documentation
+
+info:
+  app:
+    version: @project.version@
+    name: @project.name@
+    description: @project.description@
+
+spring:
+  application:
+    name: payroll
