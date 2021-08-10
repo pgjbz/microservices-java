@@ -17,13 +17,16 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ControllerAdvice {
 
+    private static final String BAD_REQUEST_TEXT = "Bad request";
+    private static final String INTERNAL_SERVER_ERROR_TEXT = "Unexpected error";
+    private static final String NOT_FOUND_TEXT = "Unexpected error";
+
     @ExceptionHandler(value = NoResultException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public StandardError notFound(NoResultException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        String error = "Not found";
         return StandardError.builder()
-                .error(error)
+                .error(NOT_FOUND_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
@@ -34,9 +37,8 @@ public class ControllerAdvice {
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
     public StandardError badRequest(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        String error = "Bad request";
         return StandardError.builder()
-                .error(error)
+                .error(BAD_REQUEST_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
@@ -47,9 +49,8 @@ public class ControllerAdvice {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public StandardError badRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        String error = "Bad request";
         return StandardError.builder()
-                .error(error)
+                .error(BAD_REQUEST_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
@@ -60,9 +61,8 @@ public class ControllerAdvice {
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public StandardError badRequest(MissingServletRequestParameterException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        String error = "Bad request";
         return StandardError.builder()
-                .error(error)
+                .error(BAD_REQUEST_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
@@ -73,10 +73,9 @@ public class ControllerAdvice {
     @ExceptionHandler(value = Exception.class)
     public StandardError badRequest(Exception ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        String error = "Unexpected error";
         log.error("Unexpected error occurred", ex);
         return StandardError.builder()
-                .error(error)
+                .error(INTERNAL_SERVER_ERROR_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
