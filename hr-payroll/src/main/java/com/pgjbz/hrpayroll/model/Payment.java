@@ -2,11 +2,13 @@ package com.pgjbz.hrpayroll.model;
 
 import com.pgjbz.hrpayroll.dto.PaymentResponseDTO;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 import static java.util.Objects.requireNonNull;
 
 @Getter
+@ToString
 public class Payment {
 
     private final String name;
