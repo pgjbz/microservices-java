@@ -19,7 +19,7 @@ public class ControllerAdvice {
 
     private static final String BAD_REQUEST_TEXT = "Bad request";
     private static final String INTERNAL_SERVER_ERROR_TEXT = "Unexpected error";
-    private static final String NOT_FOUND_TEXT = "Unexpected error";
+    private static final String NOT_FOUND_TEXT = "Not found";
 
     @ExceptionHandler(value = NoResultException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
