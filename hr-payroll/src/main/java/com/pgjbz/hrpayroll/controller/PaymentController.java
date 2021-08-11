@@ -3,6 +3,7 @@ package com.pgjbz.hrpayroll.controller;
 import com.pgjbz.hrpayroll.exception.RequestTimeOutException;
 import com.pgjbz.hrpayroll.model.Payment;
 import com.pgjbz.hrpayroll.services.PaymentService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreaker;
@@ -29,12 +30,14 @@ public class PaymentController {
                                                   HttpServletRequest request){
 
         Payment payment = circuitBreaker.run(() -> paymentService.getPayment(workerId, days),
-                throwable -> getPaymentAlternative());
+                this::getPaymentAlternative);
         log.info("Receiving request [worker id - {}, days - {} from ip {}", workerId, days, request.getRemoteAddr());
         return ResponseEntity.ok(payment);
     }
 
-    private Payment getPaymentAlternative() {
+    private Payment getPaymentAlternative(Throwable throwable) {
+        if(throwable instanceof FeignException.NotFound)
+            throw (RuntimeException)throwable;
         log.info("Error on perform payment request, using alternative method");
         throw new RequestTimeOutException("Worker service is Unavailable");
     }
