@@ -1,7 +1,9 @@
 package com.pgjbz.hrworker.controller.advice;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,66 +23,67 @@ public class ControllerAdvice {
     private static final String INTERNAL_SERVER_ERROR_TEXT = "Unexpected error";
     private static final String NOT_FOUND_TEXT = "Not found";
 
+    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<StandardError> badRequest(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(httpStatus).body(StandardError.builder()
+                .error(BAD_REQUEST_TEXT)
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .time(LocalDateTime.now())
+                .status(httpStatus.value())
+                .build());
+    }
+
+    @SneakyThrows
     @ExceptionHandler(value = NoResultException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public StandardError notFound(NoResultException ex, HttpServletRequest request) {
+    public ResponseEntity<StandardError> notFound(NoResultException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        return StandardError.builder()
+        return ResponseEntity.status(httpStatus).body(StandardError.builder()
                 .error(NOT_FOUND_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
                 .status(httpStatus.value())
-                .build();
-    }
-
-    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
-    public StandardError badRequest(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        return StandardError.builder()
-                .error(BAD_REQUEST_TEXT)
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .time(LocalDateTime.now())
-                .status(httpStatus.value())
-                .build();
+                .build());
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public StandardError badRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<StandardError> badRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        return StandardError.builder()
+        return ResponseEntity.status(httpStatus).body(StandardError.builder()
                 .error(BAD_REQUEST_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
                 .status(httpStatus.value())
-                .build();
+                .build());
     }
 
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
-    public StandardError badRequest(MissingServletRequestParameterException ex, HttpServletRequest request) {
+    public ResponseEntity<StandardError> badRequest(MissingServletRequestParameterException ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        return StandardError.builder()
+        return ResponseEntity.status(httpStatus).body(StandardError.builder()
                 .error(BAD_REQUEST_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
                 .status(httpStatus.value())
-                .build();
+                .build());
     }
 
     @ExceptionHandler(value = Exception.class)
-    public StandardError badRequest(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<StandardError> badRequest(Exception ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         log.error("Unexpected error occurred", ex);
-        return StandardError.builder()
+        return ResponseEntity.status(httpStatus).body(StandardError.builder()
                 .error(INTERNAL_SERVER_ERROR_TEXT)
                 .message(ex.getMessage())
                 .path(request.getRequestURI())
                 .time(LocalDateTime.now())
                 .status(httpStatus.value())
-                .build();
+                .build());
     }
 
 }
