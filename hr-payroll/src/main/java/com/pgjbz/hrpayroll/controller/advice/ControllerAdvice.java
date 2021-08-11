@@ -2,6 +2,7 @@ package com.pgjbz.hrpayroll.controller.advice;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pgjbz.hrpayroll.exception.RequestTimeOutException;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -80,6 +81,19 @@ public class ControllerAdvice {
                 .build());
     }
 
+    @ExceptionHandler(value = RequestTimeOutException.class)
+    public ResponseEntity<StandardError> badRequest(RequestTimeOutException ex, HttpServletRequest request) {
+        HttpStatus httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+        log.error("Service unavailable", ex);
+        return ResponseEntity.status(httpStatus).body(StandardError.builder()
+                .error(INTERNAL_SERVER_ERROR_TEXT)
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .time(LocalDateTime.now())
+                .status(httpStatus.value())
+                .build());
+    }
+
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<StandardError> badRequest(Exception ex, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -92,6 +106,8 @@ public class ControllerAdvice {
                 .status(httpStatus.value())
                 .build());
     }
+
+
 
     @SneakyThrows
     private StandardError convertResponse(String response) {
