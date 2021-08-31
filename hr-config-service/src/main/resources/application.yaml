@@ -8,5 +8,5 @@ spring:
     config:
       server:
         git:
-          uri: ${GIT_HUB_CONFIG_REPO}
+          uri: ${GIT_HUB_CONFIG_REPO:https://github.com/pgjbz/microservices-configs.git}
           default-label: main

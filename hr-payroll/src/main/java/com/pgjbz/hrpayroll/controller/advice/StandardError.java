@@ -1,6 +1,9 @@
 package com.pgjbz.hrpayroll.controller.advice;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import org.springframework.lang.NonNull;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,7 +22,11 @@ public class StandardError {
     private final String message;
     private final String path;
 
-    public StandardError(LocalDateTime time, Integer status, String error, String message, String path) {
+    public StandardError(@NonNull LocalDateTime time, 
+                        @NonNull Integer status,
+                        @NonNull String error,
+                        @NonNull String message,
+                        @NonNull String path) {
         this.time = requireNonNull(time, "time is mandatory");
         this.status = requireNonNull(status, "status is mandatory");
         this.error = requireNonNull(error, "error is mandatory");
