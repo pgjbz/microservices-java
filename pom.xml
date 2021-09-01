@@ -20,6 +20,7 @@
         <module>hr-config-service</module>
         <module>hr-eureka-server</module>
         <module>hr-worker</module>
+        <module>hr-user</module>
     </modules>
 
 </project>
