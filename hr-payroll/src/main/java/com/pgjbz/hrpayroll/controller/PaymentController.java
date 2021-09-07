@@ -38,7 +38,7 @@ public class PaymentController {
     private Payment getPaymentAlternative(Throwable throwable) {
         if(throwable instanceof FeignException.NotFound)
             throw (RuntimeException)throwable;
-        log.info("Error on perform payment request, using alternative method");
+        log.error("Error on perform payment request, using alternative method", throwable);
         throw new RequestTimeOutException("Worker service is Unavailable");
     }
 

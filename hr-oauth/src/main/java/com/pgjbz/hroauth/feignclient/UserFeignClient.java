@@ -1,6 +1,6 @@
 package com.pgjbz.hroauth.feignclient;
 
-import com.pgjbz.hroauth.model.User;
+import com.pgjbz.hroauth.dto.UserResponseDTO;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserFeignClient {
 
     @GetMapping(value = "/search")
-    ResponseEntity<User> findByEmail (@RequestParam(value = "email") String email);
+    ResponseEntity<UserResponseDTO> findByEmail (@RequestParam(value = "email") String email);
 
 }
