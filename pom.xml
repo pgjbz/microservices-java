@@ -21,6 +21,7 @@
         <module>hr-eureka-server</module>
         <module>hr-worker</module>
         <module>hr-user</module>
+        <module>hr-oauth</module>
     </modules>
 
 </project>
