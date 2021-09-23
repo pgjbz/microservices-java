@@ -8,7 +8,11 @@ import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Service
@@ -16,6 +20,14 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserFeignClient userFeignClient;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = findByEmail(username);
+        if(nonNull(user))
+            return user;
+        throw new UsernameNotFoundException(String.format("User with username %s not founded", user));
+    }
 
     @Override
     public User findByEmail(String email) {
