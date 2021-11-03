@@ -35,4 +35,10 @@ public class JwtUtil {
         return this.isTokenExpired(token);
     }
 
+    public String getRoles(String token) {
+        return String.valueOf(getAllClaimsFromToken(token).get("authorities"));
+    }
+
+
+
 }

@@ -1,5 +1,7 @@
-package com.pgjbz.gateway.configuration;
+package com.pgjbz.gateway.filter;
 
+import com.pgjbz.gateway.configuration.Constants;
+import com.pgjbz.gateway.configuration.RouterValidator;
 import com.pgjbz.gateway.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +16,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Stream;
+
 @Slf4j
 @Component
 @RefreshScope
 @RequiredArgsConstructor
-public class SecurityConfig implements GatewayFilter {
+public class SecurityFilter implements GatewayFilter {
 
     private final RouterValidator routerValidator;
     private final JwtUtil jwtUtil;
@@ -28,14 +32,25 @@ public class SecurityConfig implements GatewayFilter {
         log.info("Checking token...");
         ServerHttpRequest request = exchange.getRequest();
         if(routerValidator.isSecured(request)) {
+
             if(isAuthMissing(request))
                 return onError(exchange);
             final String token = getAuthHeader(request);
 
+            final String[] roles = rolesToArray(token);
+
             if(jwtUtil.isInvalid(token))
                 return onError(exchange);
+
+            if(routerValidator.onlyAdmin(request)
+                    && !isAdmin(roles))
+                return onError(exchange);
+
+            if(routerValidator.onlyOperatorOrAdmin(request)
+                && !(isOperator(roles) || isAdmin(roles)))
+                return onError(exchange);
+
             final Claims claims = jwtUtil.getAllClaimsFromToken(token);
-            log.info(String.valueOf(claims.get("authorities")));
         }
         return chain.filter(exchange);
     }
@@ -52,6 +67,19 @@ public class SecurityConfig implements GatewayFilter {
 
     private boolean isAuthMissing(ServerHttpRequest request) {
         return !request.getHeaders().containsKey("Authorization");
+    }
+
+    private String[] rolesToArray(String token) {
+        return jwtUtil.getRoles(token).replaceAll("[\\[\\]\\s]", "").split(",");
+    }
+
+    private boolean isAdmin(String[] roles) {
+        return Stream.of(roles).anyMatch(role ->
+            role.equalsIgnoreCase(Constants.ROLE_ADMIN));
+    }
+
+    private boolean isOperator(String[] roles) {
+        return Stream.of(roles).anyMatch(role -> role.equalsIgnoreCase(Constants.ROLE_OPERATOR));
     }
 
 }
