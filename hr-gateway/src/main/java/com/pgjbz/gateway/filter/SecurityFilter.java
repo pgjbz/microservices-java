@@ -3,7 +3,6 @@ package com.pgjbz.gateway.filter;
 import com.pgjbz.gateway.configuration.Constants;
 import com.pgjbz.gateway.configuration.RouterValidator;
 import com.pgjbz.gateway.utils.JwtUtil;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -34,21 +33,21 @@ public class SecurityFilter implements GatewayFilter {
         if(routerValidator.isSecured(request)) {
 
             if(isAuthMissing(request))
-                return onError(exchange);
+                return unauthorized(exchange);
             final String token = getAuthHeader(request);
 
             final String[] roles = rolesToArray(token);
 
             if(jwtUtil.isInvalid(token))
-                return onError(exchange);
+                return unauthorized(exchange);
 
             if(routerValidator.onlyAdmin(request)
                     && !isAdmin(roles))
-                return onError(exchange);
+                return forbidden(exchange);
 
             if(routerValidator.onlyOperatorOrAdmin(request)
                 && !(isOperator(roles) || isAdmin(roles)))
-                return onError(exchange);
+                return forbidden(exchange);
         }
         return chain.filter(exchange);
     }
@@ -57,9 +56,15 @@ public class SecurityFilter implements GatewayFilter {
         return request.getHeaders().getOrEmpty("Authorization").get(0);
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange) {
+    private Mono<Void> unauthorized(ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        return response.setComplete();
+    }
+
+    private Mono<Void> forbidden(ServerWebExchange exchange) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.FORBIDDEN);
         return response.setComplete();
     }
 
