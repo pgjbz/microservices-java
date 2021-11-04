@@ -49,8 +49,6 @@ public class SecurityFilter implements GatewayFilter {
             if(routerValidator.onlyOperatorOrAdmin(request)
                 && !(isOperator(roles) || isAdmin(roles)))
                 return onError(exchange);
-
-            final Claims claims = jwtUtil.getAllClaimsFromToken(token);
         }
         return chain.filter(exchange);
     }
