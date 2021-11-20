@@ -6,102 +6,114 @@ services:
     image: hr-config-service:1.0
     container_name: config-server
     networks:
-      - ms_course
+    - ms_course
 
   eureka-server:
     image: hr-eureka-server:1.0
     container_name: eureka-server
     networks:
-      - ms_course
+    - ms_course
     restart: on-failure
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
     depends_on:
-      - config-server
+    - config-server
     links:
-      - config-server
+    - config-server
 
   oauth-server:
     image: hr-oauth:1.0
     container_name: oauth_server
     networks:
-      - ms_course
+    - ms_course
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
       EUREKA_URL: 'http://eureka-server:8761/eureka/'
     depends_on:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     links:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     restart: on-failure
 
   gateway:
     image: hr-gateway:1.0
     container_name: gateway
     networks:
-      - ms_course
+    - ms_course
     ports:
       - "8080:8080"
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
       EUREKA_URL: 'http://eureka-server:8761/eureka/'
     depends_on:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     links:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     restart: on-failure
 
   user:
     image: hr-user:1.0
     container_name: user
     networks:
-      - ms_course
+    - ms_course
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
       EUREKA_URL: 'http://eureka-server:8761/eureka/'
     depends_on:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     links:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     restart: on-failure
 
   worker:
     image: hr-worker:1.0
     container_name: worker
     networks:
-      - ms_course
+    - ms_course
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
       EUREKA_URL: 'http://eureka-server:8761/eureka/'
     depends_on:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     links:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     restart: on-failure
 
   payroll:
     image: hr-payroll:1.0
     container_name: payroll
     networks:
-      - ms_course
+    - ms_course
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
       EUREKA_URL: 'http://eureka-server:8761/eureka/'
     depends_on:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     links:
-      - config-server
-      - eureka-server
+    - config-server
+    - eureka-server
     restart: on-failure
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hr_prometheus
+    networks:
+    - ms_course
+    volumes:
+    - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    command:
+    - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+    - "9090:9090"
 
 
 networks:

@@ -7,7 +7,7 @@ public class Constants {
 	private Constants() {
 	}
 
-	public static final List<String> OPEN_ENDPOINTS = List.of("/oauth/oauth/token");
+	public static final List<String> OPEN_ENDPOINTS = List.of("/oauth/oauth/token", "/actuator");
 
 	public static final List<String> OPERATOR = List.of("/worker");
 
