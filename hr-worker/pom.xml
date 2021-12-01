@@ -19,6 +19,7 @@
         <spring-doc.openapi.version>1.5.10</spring-doc.openapi.version>
         <jib-maven-plugin.version>3.1.4</jib-maven-plugin.version>
         <jib-maven-plugin.image>adoptopenjdk/openjdk11:jre-11.0.6_10-alpine</jib-maven-plugin.image>
+        <zipkin.version>2.2.7.RELEASE</zipkin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -45,7 +46,19 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+            <version>${zipkin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-artemis</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>

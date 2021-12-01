@@ -5,8 +5,15 @@ spring:
     config:
       uri: ${CONFIG_SERVER_URL:http://localhost:8888}
       fail-fast: true
-
+  artemis:
+    mode: native
+    broker-url: tcp://${JMS_HOST:localhost}:${JMS_PORT:61616}
+    user: pgbezerra
+    password: secret123
+  sleuth: 
+    sampler:
+      probability: 100
+  zipkin:
+    base-url: ${ZIPKIN_URL:http://localhost:9411/}
 server:
   port: ${PORT:0}
-
-

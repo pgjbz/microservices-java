@@ -79,6 +79,9 @@ services:
     environment:
       CONFIG_SERVER_URL: 'http://config-server:8888'
       EUREKA_URL: 'http://eureka-server:8761/eureka/'
+      ZIPKIN_URL: 'http://zipkin:9411/'
+      JMS_HOST: 'jms'
+      JMS_PORT: '61616'
     depends_on:
     - config-server
     - eureka-server
@@ -118,8 +121,90 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: hr_grafana
+    networks:
+    - ms_course
     ports:
     - "3000:3000"
+
+  logspout:
+    container_name: logspout
+    image: gliderlabs/logspout:v3
+    command: 'udp://logstash:5000'
+    networks:
+    - ms_course
+    links:
+    - logstash
+    volumes:
+    - '/var/run/docker.sock:/tmp/docker.sock'
+    depends_on:
+    - elasticsearch
+    - logstash
+    - kibana
+
+  logstash:
+    container_name: logstash
+    image: logstash:2.1.1
+    networks:
+    - ms_course
+    environment:
+    - STDOUT=true
+    links:
+    - elasticsearch
+    depends_on:
+    - elasticsearch
+    - kibana
+    command: 'logstash -e "input { udp { port => 5000 } } output { elasticsearch { hosts => elasticsearch } }"'
+
+    
+  kibana:
+    image: kibana:4.1.2
+    container_name: kibana
+    networks:
+    - ms_course
+    links:
+    - elasticsearch
+    environment:
+    - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+    - "5601:5601"
+    depends_on:
+    - elasticsearch
+
+  elasticsearch:
+    container_name: elasticsearch
+    networks:
+    - ms_course
+    image: elasticsearch:1.5.2
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+  
+  trace:
+    container_name: zipkin
+    image: openzipkin/zipkin
+    networks:
+    - ms_course
+    restart: always
+    ports:
+      - "9411:9411"
+    expose:
+      - "9411"
+
+  jms:
+    container_name: jms
+    image: vromero/activemq-artemis
+    restart: always
+    networks:
+    - ms_course
+    environment:
+      ARTEMIS_USERNAME: 'pgbezerra'
+      ARTEMIS_PASSWORD: 'secret123'
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    expose:
+      - "61616"
+      - "8161"
 
 networks:
   ms_course:
